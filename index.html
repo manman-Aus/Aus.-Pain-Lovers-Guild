@@ -62,7 +62,7 @@
             display: block;
             margin-bottom: 10px;
         }
-        .upload-form input, .upload-form textarea {
+        .upload-form input, .upload-form textarea, .upload-form select {
             width: 100%;
             padding: 10px;
             margin-bottom: 15px;
@@ -82,6 +82,31 @@
         .upload-form button:hover {
             background-color: #FFC107;
         }
+        .chapter-navigation {
+            margin: 20px 0;
+            text-align: center;
+        }
+        .chapter-navigation input {
+            width: 50px;
+            padding: 5px;
+            margin-right: 10px;
+            border: 1px solid #FFD700;
+            border-radius: 5px;
+            background-color: #111;
+            color: #FFD700;
+            text-align: center;
+        }
+        .chapter-navigation button {
+            background-color: #FFD700;
+            color: #000;
+            padding: 5px 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .chapter-navigation button:hover {
+            background-color: #FFC107;
+        }
     </style>
 </head>
 <body>
@@ -89,12 +114,22 @@
         Aus. Pain. Lovers. Guild
     </header>
     <div class="container">
+        <div class="chapter-navigation">
+            <label for="chapterNumber">Go to Chapter:</label>
+            <input type="number" id="chapterNumber" min="1" placeholder="1">
+            <button onclick="navigateToChapter()">Go</button>
+        </div>
         <div id="chapters">
             <!-- Chapters will be dynamically loaded here -->
         </div>
         <div class="upload-form">
             <h2>Upload a New Chapter</h2>
             <form id="uploadForm">
+                <label for="bookSelect">Select Book:</label>
+                <select id="bookSelect">
+                    <option value="default" disabled selected>Select a book</option>
+                </select>
+
                 <label for="chapterTitle">Chapter Title:</label>
                 <input type="text" id="chapterTitle" placeholder="Enter chapter title" required>
 
@@ -103,57 +138,129 @@
 
                 <button type="submit">Upload Chapter</button>
             </form>
+
+            <form id="addBookForm" style="margin-top: 20px;">
+                <h2>Add a New Book</h2>
+                <label for="newBookTitle">Book Title:</label>
+                <input type="text" id="newBookTitle" placeholder="Enter book title" required>
+                <button type="submit">Add Book</button>
+            </form>
         </div>
     </div>
 
     <script>
         const chaptersDiv = document.getElementById('chapters');
         const uploadForm = document.getElementById('uploadForm');
+        const addBookForm = document.getElementById('addBookForm');
+        const bookSelect = document.getElementById('bookSelect');
 
-        // Placeholder for chapters (this should be replaced by a backend/database in a live site)
-        const chapters = [];
+        // Placeholder for books and chapters (this should be replaced by a backend/database in a live site)
+        const books = {};
 
-        function displayChapters() {
+        function displayChapters(bookTitle) {
             chaptersDiv.innerHTML = '';
-            chapters.forEach((chapter, index) => {
-                const chapterElement = document.createElement('div');
-                chapterElement.classList.add('chapter');
-                chapterElement.innerHTML = `
-                    <div class="chapter-title">${chapter.title}</div>
-                    <div class="chapter-content">${chapter.content}</div>
-                    <button class="delete-button" onclick="deleteChapter(${index})">Delete</button>
-                `;
-                chaptersDiv.appendChild(chapterElement);
-            });
+            if (books[bookTitle] && books[bookTitle].length > 0) {
+                books[bookTitle].forEach((chapter, index) => {
+                    const chapterElement = document.createElement('div');
+                    chapterElement.classList.add('chapter');
+                    chapterElement.id = `chapter-${index + 1}`;
+                    chapterElement.innerHTML = `
+                        <div class="chapter-title">Chapter ${index + 1}: ${chapter.title}</div>
+                        <div class="chapter-content">${chapter.content}</div>
+                        <button class="delete-button" onclick="deleteChapter('${bookTitle}', ${index})">Delete</button>
+                    `;
+                    chaptersDiv.appendChild(chapterElement);
+                });
+            } else {
+                chaptersDiv.innerHTML = '<p>No chapters available for this book.</p>';
+            }
         }
 
-        function deleteChapter(index) {
+        function deleteChapter(bookTitle, index) {
             const adminPassword = prompt('Enter admin password to delete this chapter:');
             if (adminPassword === 'yourpassword') { // Replace 'yourpassword' with your desired password
-                chapters.splice(index, 1);
-                displayChapters();
+                books[bookTitle].splice(index, 1);
+                displayChapters(bookTitle);
             } else {
                 alert('Incorrect password. Deletion not allowed.');
             }
         }
 
+        function navigateToChapter() {
+            const chapterNumber = parseInt(document.getElementById('chapterNumber').value, 10);
+            const bookTitle = bookSelect.value;
+            if (bookTitle === 'default') {
+                alert('Please select a book first.');
+                return;
+            }
+            if (chapterNumber > 0 && chapterNumber <= (books[bookTitle] || []).length) {
+                const chapterElement = document.getElementById(`chapter-${chapterNumber}`);
+                if (chapterElement) {
+                    chapterElement.scrollIntoView({ behavior: 'smooth' });
+                }
+            } else {
+                alert('Invalid chapter number.');
+            }
+        }
+
         uploadForm.addEventListener('submit', (event) => {
             event.preventDefault();
+            const bookTitle = bookSelect.value;
+            if (bookTitle === 'default') {
+                alert('Please select a book first.');
+                return;
+            }
+
             const title = document.getElementById('chapterTitle').value;
             const content = document.getElementById('chapterContent').value;
 
-            // Add the new chapter to the array (this would be saved to a database in a live site)
-            chapters.push({ title, content });
+            // Add the new chapter to the selected book
+            if (!books[bookTitle]) {
+                books[bookTitle] = [];
+            }
+            books[bookTitle].push({ title, content });
 
             // Clear the form
             uploadForm.reset();
 
             // Refresh the displayed chapters
-            displayChapters();
+            displayChapters(bookTitle);
         });
 
-        // Initial display of chapters
-        displayChapters();
+        addBookForm.addEventListener('submit', (event) => {
+            event.preventDefault();
+            const newBookTitle = document.getElementById('newBookTitle').value;
+
+            if (books[newBookTitle]) {
+                alert('Book already exists.');
+                return;
+            }
+
+            // Add the new book
+            books[newBookTitle] = [];
+
+            // Add to the dropdown
+            const option = document.createElement('option');
+            option.value = newBookTitle;
+            option.textContent = newBookTitle;
+            bookSelect.appendChild(option);
+
+            // Clear the form
+            addBookForm.reset();
+
+            alert(`Book "${newBookTitle}" added successfully.`);
+        });
+
+        // Initialize with default book options (if any)
+        function initializeBooks() {
+            for (const bookTitle in books) {
+                const option = document.createElement('option');
+                option.value = bookTitle;
+                option.textContent = bookTitle;
+                bookSelect.appendChild(option);
+            }
+        }
+
+        initializeBooks();
     </script>
 </body>
-</html>
