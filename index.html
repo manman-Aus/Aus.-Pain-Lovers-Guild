@@ -151,6 +151,15 @@
                 <input type="text" id="newBookTitle" placeholder="Enter book title" required>
                 <button type="submit">Add Book</button>
             </form>
+
+            <form id="deleteBookForm" style="margin-top: 20px;">
+                <h2>Delete a Book</h2>
+                <label for="deleteBookSelect">Select Book to Delete:</label>
+                <select id="deleteBookSelect">
+                    <option value="default" disabled selected>Select a book</option>
+                </select>
+                <button type="submit">Delete Book</button>
+            </form>
         </div>
     </div>
 
@@ -158,8 +167,10 @@
         const chaptersDiv = document.getElementById('chapters');
         const uploadForm = document.getElementById('uploadForm');
         const addBookForm = document.getElementById('addBookForm');
+        const deleteBookForm = document.getElementById('deleteBookForm');
         const bookSelect = document.getElementById('bookSelect');
         const readerBookSelect = document.getElementById('readerBookSelect');
+        const deleteBookSelect = document.getElementById('deleteBookSelect');
 
         const books = JSON.parse(localStorage.getItem('books')) || {};
 
@@ -170,6 +181,7 @@
         function loadBooks() {
             bookSelect.innerHTML = '<option value="default" disabled selected>Select a book</option>';
             readerBookSelect.innerHTML = '<option value="default" disabled selected>Select a book</option>';
+            deleteBookSelect.innerHTML = '<option value="default" disabled selected>Select a book</option>';
             for (const bookTitle in books) {
                 const option = document.createElement('option');
                 option.value = bookTitle;
@@ -178,6 +190,9 @@
 
                 const readerOption = option.cloneNode(true);
                 readerBookSelect.appendChild(readerOption);
+
+                const deleteOption = option.cloneNode(true);
+                deleteBookSelect.appendChild(deleteOption);
             }
         }
 
@@ -263,6 +278,26 @@
 
             loadBooks();
             addBookForm.reset();
+        });
+
+        deleteBookForm.addEventListener('submit', (event) => {
+            event.preventDefault();
+            const bookTitle = deleteBookSelect.value;
+            if (bookTitle === 'default') {
+                alert('Please select a book first.');
+                return;
+            }
+
+            const adminPassword = prompt('Enter admin password to delete this book:');
+            if (adminPassword === 'yourpassword') {
+                delete books[bookTitle];
+                saveBooksToStorage();
+                loadBooks();
+                chaptersDiv.innerHTML = '';
+                alert('Book deleted successfully.');
+            } else {
+                alert('Incorrect password. Deletion not allowed.');
+            }
         });
 
         window.onload = loadBooks;
