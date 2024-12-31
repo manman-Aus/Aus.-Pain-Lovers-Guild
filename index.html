@@ -7,7 +7,7 @@
     <style>
         body {
             background-color: #1a1a1d;
-            color: #b39ddb; /* Darker purple */
+            color: #9575cd; /* Darker purple */
             font-family: "Merriweather", serif;
             margin: 0;
             padding: 0;
@@ -18,9 +18,9 @@
             text-align: center;
             font-size: 32px;
             font-weight: bold;
-            border-bottom: 3px solid #b39ddb;
+            border-bottom: 3px solid #9575cd;
             text-shadow: 2px 2px 4px #000;
-            color: #b39ddb;
+            color: #9575cd;
         }
         .container {
             max-width: 900px;
@@ -42,14 +42,14 @@
             margin-bottom: 10px;
             border-bottom: 2px solid #6b6b6b;
             padding-bottom: 5px;
-            color: #9575cd; /* Accent purple */
+            color: #7e57c2; /* Accent purple */
         }
         .chapter-content {
             margin-bottom: 10px;
-            color: #b39ddb;
+            color: #9575cd;
         }
         .delete-button {
-            background-color: #9575cd;
+            background-color: #7e57c2;
             color: #1a1a1d;
             padding: 5px 10px;
             border: none;
@@ -58,7 +58,7 @@
             font-size: 14px;
         }
         .delete-button:hover {
-            background-color: #7e57c2;
+            background-color: #6a48b2;
         }
         .upload-form {
             margin-top: 30px;
@@ -70,7 +70,7 @@
         .upload-form label {
             display: block;
             margin-bottom: 10px;
-            color: #9575cd;
+            color: #7e57c2;
         }
         .upload-form input, .upload-form textarea, .upload-form select {
             width: 100%;
@@ -79,10 +79,10 @@
             border: 1px solid #6b6b6b;
             border-radius: 5px;
             background-color: #1a1a1d;
-            color: #b39ddb;
+            color: #9575cd;
         }
         .upload-form button {
-            background-color: #9575cd;
+            background-color: #7e57c2;
             color: #1a1a1d;
             padding: 10px 20px;
             border: none;
@@ -90,7 +90,7 @@
             cursor: pointer;
         }
         .upload-form button:hover {
-            background-color: #7e57c2;
+            background-color: #6a48b2;
         }
         .chapter-navigation {
             margin: 20px 0;
@@ -103,11 +103,11 @@
             border: 1px solid #6b6b6b;
             border-radius: 5px;
             background-color: #1a1a1d;
-            color: #b39ddb;
+            color: #9575cd;
             text-align: center;
         }
         .chapter-navigation button {
-            background-color: #9575cd;
+            background-color: #7e57c2;
             color: #1a1a1d;
             padding: 5px 10px;
             border: none;
@@ -115,7 +115,7 @@
             cursor: pointer;
         }
         .chapter-navigation button:hover {
-            background-color: #7e57c2;
+            background-color: #6a48b2;
         }
         .delete-book-form {
             margin-top: 20px;
@@ -125,7 +125,7 @@
             box-shadow: 0 0 15px rgba(50, 50, 70, 0.3);
         }
         .delete-book-form h2 {
-            color: #9575cd;
+            color: #7e57c2;
         }
     </style>
 </head>
@@ -329,11 +329,13 @@
                 alert(`Book "${bookTitle}" deleted successfully.`);
             } else {
                 alert('Incorrect password. Deletion not allowed.');
-            }
+      }
         });
 
-        // Initialize the app
-        loadBooks();
+        // Load books and chapters on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            loadBooks();
+        });
     </script>
 </body>
 </html>
