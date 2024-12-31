@@ -169,9 +169,10 @@
         const addBookForm = document.getElementById('addBookForm');
         const deleteBookForm = document.getElementById('deleteBookForm');
         const bookSelect = document.getElementById('bookSelect');
-        const readerBookSelect = document.getElementById('readerBookSelect');
         const deleteBookSelect = document.getElementById('deleteBookSelect');
+        const readerBookSelect = document.getElementById('readerBookSelect');
 
+        // Persistent storage for books and chapters
         const books = JSON.parse(localStorage.getItem('books')) || {};
 
         function saveBooksToStorage() {
@@ -179,9 +180,11 @@
         }
 
         function loadBooks() {
+            // Populate the book dropdowns
             bookSelect.innerHTML = '<option value="default" disabled selected>Select a book</option>';
             readerBookSelect.innerHTML = '<option value="default" disabled selected>Select a book</option>';
             deleteBookSelect.innerHTML = '<option value="default" disabled selected>Select a book</option>';
+
             for (const bookTitle in books) {
                 const option = document.createElement('option');
                 option.value = bookTitle;
@@ -217,7 +220,7 @@
 
         function deleteChapter(bookTitle, index) {
             const adminPassword = prompt('Enter admin password to delete this chapter:');
-            if (adminPassword === 'yourpassword') {
+            if (adminPassword === 'yourpassword') { // Replace 'yourpassword' with your desired password
                 books[bookTitle].splice(index, 1);
                 saveBooksToStorage();
                 displayChapters(bookTitle);
@@ -254,6 +257,7 @@
             const title = document.getElementById('chapterTitle').value;
             const content = document.getElementById('chapterContent').value;
 
+            // Add the new chapter to the selected book
             if (!books[bookTitle]) {
                 books[bookTitle] = [];
             }
@@ -261,6 +265,8 @@
             saveBooksToStorage();
 
             uploadForm.reset();
+
+            // Refresh the displayed chapters
             displayChapters(bookTitle);
         });
 
@@ -273,10 +279,14 @@
                 return;
             }
 
+            // Add the new book
             books[newBookTitle] = [];
             saveBooksToStorage();
 
+            // Add to the dropdowns
             loadBooks();
+
+            // Clear the form
             addBookForm.reset();
         });
 
@@ -300,6 +310,7 @@
             }
         });
 
+        // Load books and chapters on page load
         window.onload = loadBooks;
     </script>
 </body>
