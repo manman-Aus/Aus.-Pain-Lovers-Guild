@@ -119,6 +119,12 @@
             <input type="number" id="chapterNumber" min="1" placeholder="1">
             <button onclick="navigateToChapter()">Go</button>
         </div>
+        <div>
+            <label for="readerBookSelect">Choose Book to Read:</label>
+            <select id="readerBookSelect" onchange="displayChapters(this.value)">
+                <option value="default" disabled selected>Select a book</option>
+            </select>
+        </div>
         <div id="chapters">
             <!-- Chapters will be dynamically loaded here -->
         </div>
@@ -153,9 +159,14 @@
         const uploadForm = document.getElementById('uploadForm');
         const addBookForm = document.getElementById('addBookForm');
         const bookSelect = document.getElementById('bookSelect');
+        const readerBookSelect = document.getElementById('readerBookSelect');
 
-        // Placeholder for books and chapters (this should be replaced by a backend/database in a live site)
-        const books = {};
+        // Persistent storage for books and chapters
+        const books = JSON.parse(localStorage.getItem('books')) || {};
+
+        function saveBooksToStorage() {
+            localStorage.setItem('books', JSON.stringify(books));
+        }
 
         function displayChapters(bookTitle) {
             chaptersDiv.innerHTML = '';
@@ -180,6 +191,7 @@
             const adminPassword = prompt('Enter admin password to delete this chapter:');
             if (adminPassword === 'yourpassword') { // Replace 'yourpassword' with your desired password
                 books[bookTitle].splice(index, 1);
+                saveBooksToStorage();
                 displayChapters(bookTitle);
             } else {
                 alert('Incorrect password. Deletion not allowed.');
@@ -188,7 +200,7 @@
 
         function navigateToChapter() {
             const chapterNumber = parseInt(document.getElementById('chapterNumber').value, 10);
-            const bookTitle = bookSelect.value;
+            const bookTitle = readerBookSelect.value;
             if (bookTitle === 'default') {
                 alert('Please select a book first.');
                 return;
@@ -219,6 +231,7 @@
                 books[bookTitle] = [];
             }
             books[bookTitle].push({ title, content });
+            saveBooksToStorage();
 
             // Clear the form
             uploadForm.reset();
@@ -238,29 +251,7 @@
 
             // Add the new book
             books[newBookTitle] = [];
+            saveBooksToStorage();
 
-            // Add to the dropdown
-            const option = document.createElement('option');
-            option.value = newBookTitle;
-            option.textContent = newBookTitle;
-            bookSelect.appendChild(option);
-
-            // Clear the form
-            addBookForm.reset();
-
-            alert(`Book "${newBookTitle}" added successfully.`);
-        });
-
-        // Initialize with default book options (if any)
-        function initializeBooks() {
-            for (const bookTitle in books) {
-                const option = document.createElement('option');
-                option.value = bookTitle;
-                option.textContent = bookTitle;
-                bookSelect.appendChild(option);
-            }
-        }
-
-        initializeBooks();
-    </script>
-</body>
+            // Add to the dropdowns
+            addBook
